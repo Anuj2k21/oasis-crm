@@ -2541,11 +2541,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
+const getBookingInfo=async (reference_num)=>{
+const apiUrl = `http://localhost/OASIS-CRM/generate-invoice/api.generateInvoice.php?reference_number=${reference_num}`;
 
+ try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json(); 
+    return data.data?.[0]
+  } catch (error) {
+    console.error('There was a problem with the fetch operation:', error);
+  }
+}
 
 
 // Generate Invoice javascript code start 
-function generateInvoice() {
+ async function  generateInvoice() {
     const newWindow = window.open('', '_blank');
     // Fetch dynamic values from input fields
     const date = document.getElementById('dateTime').textContent; // Change to textContent to get the formatted date
@@ -2558,6 +2571,15 @@ function generateInvoice() {
     const billTotal = document.getElementById('total').value; // Make sure this is defined properly
     const gstAmount = document.getElementById('gstAmount').value; // Get GST amount dynamically
     const grandTotal = document.getElementById('grandTotal').value;
+    const referenceNum=document.getElementById("reference-display").innerText;
+
+    //call get api
+     const bookingData= await  getBookingInfo(referenceNum);
+     const {reference_number,company_name,agent_name,contact,gstin_no,guest_name,hotel_name,}=bookingData;
+     console.log("cdnacu",bookingData)
+     
+
+
 
     newWindow.document.write(`
    <html>
@@ -2626,27 +2648,27 @@ function generateInvoice() {
                                                                 <tr>
                                                                     <td width="30%">Booking Ref No</td>
                                                                     <td width="3%">:</td>
-                                                                    <td width="67%">30858</td>
+                                                                    <td width="67%">${reference_number}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td>Company Name</td>
                                                                     <td>:</td>
-                                                                    <td>xyz Travellers</td>
+                                                                    <td>${company_name}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td>Contact Person</td>
                                                                     <td>:</td>
-                                                                    <td>Mr. Amit Chaurasia</td>
+                                                                    <td>${agent_name}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td>Phone No</td>
                                                                     <td>:</td>
-                                                                    <td>9925050010</td>
+                                                                    <td>${contact}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td>GSTIN</td>
                                                                     <td>:</td>
-                                                                    <td>GT761287</td>
+                                                                    <td>${gstin_no}</td>
                                                                 </tr>
                                                             </table>
                                                         </td>
@@ -2655,12 +2677,12 @@ function generateInvoice() {
                                                                 <tr style="background-color: white !important">
                                                                     <td width="30%">Traveller Name</td>
                                                                     <td width="5%">:</td>
-                                                                    <td width="65%">Gunjankumar Nikunjkumar Patel</td>
+                                                                    <td width="65%">${guest_name}</td>
                                                                 </tr>
                                                                 <tr style="background-color: white !important">
                                                                     <td>Hotel Name</td>
                                                                     <td>:</td>
-                                                                    <td></td>
+                                                                    <td>${hotel_name}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td>Traveller Count</td>
@@ -2670,7 +2692,7 @@ function generateInvoice() {
                                                                 <tr>
                                                                     <td>Traveller Date</td>
                                                                     <td>:</td>
-                                                                    <td></td>
+                                                                    <td>${new Date().toLocaleDateString('en-GB')}</td>
                                                                 </tr>
                                                             </table>
                                                         </td>
