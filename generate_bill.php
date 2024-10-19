@@ -1985,7 +1985,7 @@ function calculateAED() {
             <label class="form-label">GST Type</label>
             <div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="gstType" id="igst" checked>
+                    <input class="form-check-input" type="radio" name="gstType" id="igst" >
                     <label class="form-check-label" for="igst" style="font-weight: bold;">IGST</label>
                 </div>
                 <div class="form-check form-check-inline">
@@ -1996,11 +1996,11 @@ function calculateAED() {
 
             <div>
                 <div class="form-check form-check-inline mt-4">
-                    <input class="form-check-input" type="radio" name="gstType" id="tcs" checked>
+                    <input class="form-check-input" type="radio" name="tcs_tdsType" id="tcs">
                     <label class="form-check-label" for="tcs" style="font-weight: bold;">TCS</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="gstType" id="tds">
+                    <input class="form-check-input" type="radio" name="tcs_tdsType" id="tds">
                     <label class="form-check-label" for="tds" style="font-weight: bold;">TDS</label>
                 </div>
             </div>
