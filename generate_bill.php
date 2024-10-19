@@ -106,9 +106,12 @@ if ($result->num_rows > 0) {
 // Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitize and validate the input data (you may want to add more validation here)
-    $referenceNumber = $_POST['referenceNumber'];
-    $companyName = $_POST['companyName'];
-    $agentName = $_POST['agentName'];
+     echo "<pre>";
+    print_r($_POST); // Print all POST data
+    echo "</pre>";
+    $reference_number = $_POST['reference_number'];
+    $company_name = $_POST['company_name'];
+    $agent_name = $_POST['agent_name'];
     $address = $_POST['address'];
     $country = $_POST['country'];
     $city = $_POST['city'];
@@ -130,7 +133,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Prepare and bind SQL statement
     $stmt = $conn->prepare("INSERT INTO agent_info (reference_number, company_name, agent_name, address, country, city, contact, sold_by, gstin_no, guest_name, destination_country, destination_city, hotel_name, hotel_address, hotel_contact_no, room_no, whatsapp_no, emergency_no, adults, children, infants) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssssssssssssssssiii", $referenceNumber, $companyName, $agentName, $address, $country, $city, $contact, $sold_by, $gstin_no, $guest_name, $destination_country, $destination_city, $hotel_name, $hotel_address, $hotel_contact_no, $room_no, $whatsapp_no, $emergency_no, $adults, $children, $infants);
+    $stmt->bind_param("ssssssssssssssssssiii", $reference_number, $company_name, $agent_name, $address, $country, $city, $contact, $sold_by, $gstin_no, $guest_name, $destination_country, $destination_city, $hotel_name, $hotel_address, $hotel_contact_no, $room_no, $whatsapp_no, $emergency_no, $adults, $children, $infants);
 
     // Execute the statement and check for errors
     if ($stmt->execute()) {
@@ -293,7 +296,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           role="tabpanel"
         >
              <!-- Booking Information Form Start -->
-    <form id="bookingForm" method="POST">
+    <form id="bookingForm">
         <h5 class="mb-3 p-3" style="font-weight: bold;">Agent Information</h5>
         <hr>
 
@@ -304,11 +307,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="col-md-3">
                 <label for="companyName" class="form-label" style="font-weight: bold;">Company Name</label>
-                <input type="text" class="form-control" id="companyName" name="companyName" placeholder="Enter Company Name" value="">
+                <input type="text" class="form-control" id="companyName" name="company_name" placeholder="Enter Company Name" value="">
             </div>
             <div class="col-md-3">
                 <label for="agentName" class="form-label" style="font-weight: bold;">Agent Name</label>
-                <input type="text" class="form-control" id="agentName" name="agentName" placeholder="Enter Agent Name" value="">
+                <input type="text" class="form-control" id="agentName" name="agent_name" placeholder="Enter Agent Name" value="">
             </div>
             <div class="col-md-3">
                 <label for="address" class="form-label" style="font-weight: bold;">Address</label>
@@ -398,31 +401,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="number" class="form-control" id="infants" name="infants" placeholder="Number of Infants" min="0">
             </div>
         </div>
-
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
+ 
+       
     </form>
 
+    <div class="text-center">
+            <button   id="saveBooking" class="btn btn-primary">Save & Next</button>
+        </div>
+    
+
    
-          <button class="btn btn-primary" id="saveBooking">Save & Next</button>
 
  </div>
+
+ <!-- aman agent  -->
  <script>
-                $(document).ready(function() {
-                    $('#bookingForm').on('submit', function(event) {
-                        event.preventDefault(); // Prevent the default form submission
 
-                        const formData = $(this).serialize(); // Serialize the form data
+                       const onSubmit=(e)=> {
+                        e.preventDefault(); 
+                        const reference_number=document.getElementById("referenceNumber").value;
+                        const company_name=document.getElementById("companyName").value;
+                        const agent_name=document.getElementById("agentName").value;
+                        const address=document.getElementById("address").value;
+                        const country=document.getElementById("country").value;
+                        const contact=document.getElementById("contact").value;
+                        const city=document.getElementById("city").value;
+                        const sold_by=document.getElementById("sold_by").value;
+                        const gstin_no=document.getElementById("gstin_no").value;
+                        const guest_name=document.getElementById("guest_name").value;
+                        const destination_country=document.getElementById("destination_country").value;
+                        const destination_city=document.getElementById("destination_city").value;
+                        const hotel_name=document.getElementById("hotel_name").value;
+                        const hotel_address=document.getElementById("hotel_address").value;
+                        const hotel_contact_no=document.getElementById("hotel_contact_no").value;
+                        const room_no=document.getElementById("room_no").value;
+                        const whatsapp_no=document.getElementById("whatsapp_no").value;
+                        const emergency_no=document.getElementById("emergency_no").value;
+                        const adults=+document.getElementById("adults").value;
+                        const children=+document.getElementById("children").value;
+                        const infants=+document.getElementById("infants").value;
+                      
 
-                        // Disable the submit button to prevent multiple submissions
                         $('button[type="submit"]').prop('disabled', true);
 
                         // AJAX call to send the form data to the server
                         $.ajax({
-                            url: '', // Specify your PHP script that processes the form
+                            url: '', 
                             type: 'POST',
-                            data: formData,
+                            data: {
+                              reference_number,company_name,agent_name,address,country,contact,city,sold_by,gstin_no,guest_name,destination_country,destination_city,hotel_name,hotel_address,hotel_contact_no,room_no,whatsapp_no,emergency_no,adults,children,infants
+                            },
                             success: function(response) {
                                 Swal.fire({
                                     icon: 'success',
@@ -442,12 +470,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 // Display the submitted info
                                 document.getElementById("submitted-info").style.display = "block";
 
-                                // Reset the form fields and enable the submit button
-                                $('#bookingForm').trigger("reset");
-                                $('button[type="submit"]').prop('disabled', false);
+                               document.getElementById("hotel-tab").click();
+                              
 
                                 // Redirect to avoid form re-submission on refresh
-                                window.location.href = ""; // Replace with your own redirect
+                               
                             },
                             error: function() {
                                 Swal.fire({
@@ -461,7 +488,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $('button[type="submit"]').prop('disabled', false);
                             }
                         });
-                    });
+                    }
+                $(document).ready(function() {
+                  //   $('#bookingForm').on('submit', 
+                    document.getElementById("saveBooking").addEventListener("click",onSubmit);
+                  // );
                 });
             </script>
 
@@ -1855,7 +1886,7 @@ function calculateAED() {
         <!--Recieved tab Ends->
 
         <!-- Invoice Tab -->
-           <!-- TinyMCE Script -->
+    
 <style>
   .desgin{
     font-Size:20px;
@@ -2015,7 +2046,10 @@ function calculateAED() {
 
         <!-- Save Button -->
         <div class="col-md-4 mt-5 " style="text-align:end;">
-            <button class="btn btn-primary" onclick="generateInvoice()">Generate Invoice</button>
+            <button class="btn btn-primary"
+             onclick="generateInvoice()"
+             >
+             Generate Invoice</button>
            
         </div>
     </div>
@@ -2023,8 +2057,6 @@ function calculateAED() {
  <!-- Invoice Output Section (Hidden initially) -->
 
     <!-- new code starts here -->
-  
-
  `<div id="invoiceOutput" style="margin-top:20px;display:none" >
     <table width="100%" border="0" cellpadding="0" cellspacing="0">
       <tr>
@@ -2229,9 +2261,6 @@ function calculateAED() {
                           border-right: 0px !important;
                           border-top: 0px !important;
                           border-bottom: 0px !important;
-
-
-
                         "
                       >
                         <thead>
@@ -2462,10 +2491,9 @@ function calculateAED() {
     </table>
   </div>
   </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script> -->
 
 <script>
-    //Invoice Tab Value Dynamic start
 document.addEventListener('DOMContentLoaded', function () {
     // Handle adding new row
     document.getElementById('addRowBtn-4').addEventListener('click', function () {
@@ -2492,10 +2520,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
-
-
-
-
 // calculate Total starts
  function calculateTotal() {
         const units = document.getElementById('units').value;
@@ -2516,16 +2540,13 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('grandTotal').value = grandTotal;
     }
 
-// calculate total ends
-//Invoice Tab Value Dynamic end
+
 
 
 
 // Generate Invoice javascript code start 
-
 function generateInvoice() {
     const newWindow = window.open('', '_blank');
-    
     // Fetch dynamic values from input fields
     const date = document.getElementById('dateTime').textContent; // Change to textContent to get the formatted date
     const invoiceNumber = document.getElementById('invoiceNumber').textContent; // Ensure this is correct
@@ -2784,10 +2805,7 @@ function generateInvoice() {
             </table>
         </div>
     </body>
-</html>
-
-    `);
-
+</html>`);
     newWindow.document.close();
     newWindow.focus();
     newWindow.print();
@@ -2799,13 +2817,11 @@ function generateInvoice() {
 // invoiceNumber Dynamic Showing script code
 
 
- let invoiceCounter = 3; // Example starting number. This can be stored and incremented dynamically.
 
         function generateInvoiceNumber() {
+           let invoiceCounter = 3; 
             const prefix = "OT"; // Fixed prefix
             const now = new Date();
-
-            // Get date parts
             let day = now.getDate();
             let month = now.getMonth() + 1; // Months are zero-indexed
             const year = now.getFullYear();
@@ -2841,41 +2857,24 @@ function generateInvoice() {
 
  function formatDateTime() {
     const now = new Date();
-
-    // Get date parts
     let day = now.getDate();
-    let month = now.getMonth() + 1; // Months are zero-indexed
+    let month = now.getMonth() + 1; 
     const year = now.getFullYear();
 
-    // Get time parts
     let hours = now.getHours();
     let minutes = now.getMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
 
-    // Convert 24-hour format to 12-hour format
     hours = hours % 12;
-    hours = hours ? hours : 12; // hour '0' should be '12'
-
-    // Format minutes with leading zero
+    hours = hours ? hours : 12; 
     minutes = minutes < 10 ? '0' + minutes : minutes;
-
-    // Format day and month with leading zeros
     day = day < 10 ? '0' + day : day;
     month = month < 10 ? '0' + month : month;
-
-    // Format the date as "dd-mm-yyyy" and time as "HH:MM AM/PM"
     const formattedDateTime = `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
 
-    // Display the formatted date and time in the HTML
     document.getElementById('dateTime').textContent = formattedDateTime;
 }
-
-// Call the function to display the date and time when the page loads
 formatDateTime();
-
-
-
-// Generate Invoice javascript code ends
 </script>
 
 
@@ -2950,13 +2949,13 @@ formatDateTime();
       }
 
       // Save & Next functionality
-      document
-        .getElementById("saveBooking")
-        .addEventListener("click", function () {
-          // Add your save logic here if necessary
-          alert("Booking Info saved!");
-          goToNextTab();
-        });
+      // document
+      //   .getElementById("saveBooking")
+      //   .addEventListener("click", function () {
+      //     // Add your save logic here if necessary
+      //     alert("Booking Info saved!");
+      //     goToNextTab();
+      //   });
 
       // document
       //   .getElementById("saveHotel")
@@ -2979,95 +2978,95 @@ formatDateTime();
           goToNextTab();
         });
 
-      document
-        .getElementById("saveAirTicket")
-        .addEventListener("click", function () {
-          alert("Air Ticket saved!");
-          goToNextTab();
-        });
+      // document
+      //   .getElementById("saveAirTicket")
+      //   .addEventListener("click", function () {
+      //     alert("Air Ticket saved!");
+      //     goToNextTab();
+      //   });
 
-      document
-        .getElementById("saveInvoice")
-        .addEventListener("click", function () {
-          alert("Invoice generated!");
-          // You may want to handle final saving logic here.
-        });
+      // document
+      //   .getElementById("saveInvoice")
+      //   .addEventListener("click", function () {
+      //     alert("Invoice generated!");
+      //     // You may want to handle final saving logic here.
+      //   });
 
-      document
-        .getElementById("saveSupplierPayment")
-        .addEventListener("click", function () {
-          alert("Supplier Payment saved!");
-          goToNextTab();
-        });
+      // document
+      //   .getElementById("saveSupplierPayment")
+      //   .addEventListener("click", function () {
+      //     alert("Supplier Payment saved!");
+      //     goToNextTab();
+      //   });
 
-      document
-        .getElementById("saveReceivedAmount")
-        .addEventListener("click", function () {
-          alert("Received Amount saved!");
-          goToNextTab();
-        });
+      // document
+      //   .getElementById("saveReceivedAmount")
+      //   .addEventListener("click", function () {
+      //     alert("Received Amount saved!");
+      //     goToNextTab();
+      //   });
 
-      document
-        .getElementById("savePaymentHistory")
-        .addEventListener("click", function () {
-          alert("Payment History saved!");
-          // You may want to handle final saving logic here.
-        });
+      // document
+      //   .getElementById("savePaymentHistory")
+      //   .addEventListener("click", function () {
+      //     alert("Payment History saved!");
+      //     // You may want to handle final saving logic here.
+      //   });
 
       // Skip functionality
-      document
-        .getElementById("skipBooking")
-        .addEventListener("click", function () {
-          goToNextTab();
-        });
+      // document
+      //   .getElementById("skipBooking")
+      //   .addEventListener("click", function () {
+      //     goToNextTab();
+      //   });
 
-      document
-        .getElementById("skipHotel")
-        .addEventListener("click", function () {
-          goToNextTab();
-        });
+      // document
+      //   .getElementById("skipHotel")
+      //   .addEventListener("click", function () {
+      //     goToNextTab();
+      //   });
 
-      document
-        .getElementById("skipTours")
-        .addEventListener("click", function () {
-          goToNextTab();
-        });
+      // document
+      //   .getElementById("skipTours")
+      //   .addEventListener("click", function () {
+      //     goToNextTab();
+      //   });
 
-      document
-        .getElementById("skipVisa")
-        .addEventListener("click", function () {
-          goToNextTab();
-        });
+      // document
+      //   .getElementById("skipVisa")
+      //   .addEventListener("click", function () {
+      //     goToNextTab();
+      //   });
 
-      document
-        .getElementById("skipAirTicket")
-        .addEventListener("click", function () {
-          goToNextTab();
-        });
+      // document
+      //   .getElementById("skipAirTicket")
+      //   .addEventListener("click", function () {
+      //     goToNextTab();
+      //   });
 
-      document
-        .getElementById("skipInvoice")
-        .addEventListener("click", function () {
-          goToNextTab();
-        });
+      // document
+      //   .getElementById("skipInvoice")
+      //   .addEventListener("click", function () {
+      //     goToNextTab();
+      //   });
 
-      document
-        .getElementById("skipSupplierPayment")
-        .addEventListener("click", function () {
-          goToNextTab();
-        });
+      // document
+      //   .getElementById("skipSupplierPayment")
+      //   .addEventListener("click", function () {
+      //     goToNextTab();
+      //   });
 
-      document
-        .getElementById("skipReceivedAmount")
-        .addEventListener("click", function () {
-          goToNextTab();
-        });
+      // document
+      //   .getElementById("skipReceivedAmount")
+      //   .addEventListener("click", function () {
+      //     goToNextTab();
+      //   });
 
-      document
-        .getElementById("skipPaymentHistory")
-        .addEventListener("click", function () {
-          goToNextTab();
-        });
+      // document
+      //   .getElementById("skipPaymentHistory")
+      //   .addEventListener("click", function () {
+      //     goToNextTab();
+      //   });
     </script>
 
 <!-- javasvript for Next step and skip steps  ends -->
