@@ -1522,11 +1522,11 @@ function getTableData(e) {
         </div>
         <div class="col-md-2">
             <label for="net_in_inr" class="form-label" style="font-weight:700">Net In INR</label>
-            <input type="number" class="form-control" id="net_in_inr" style="width:100px;font-weight:700" required oninput="calculateAED()">
+            <input type="number" class="form-control" id="net_in_inr" style="width:100px;font-weight:700" onchange="convertINRtoAED()"  required >
         </div>
         <div class="col-md-2">
             <label for="conversion_rate" class="form-label" style="font-weight:700; text-wrap:nowrap">Conversion Rate (AED)</label>
-            <input type="number" class="form-control" id="conversion_rate" style="width:100px;font-weight:700" required oninput="calculateAED()">
+            <input type="number" class="form-control" id="conversion_rate" style="width:100px;font-weight:700" onchange="convertINRtoAED()" required >
         </div>
         <div class="col-md-3">
             <label for="amount_aed" class="form-label" style="font-weight:700">Amount (AED)</label>
@@ -1564,17 +1564,14 @@ function getTableData(e) {
     </div>
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-        <button class="btn btn-primary" type="submit" style="font-weight: 500; background-color:green">Save Payment</button>
+        <button id="savePaymentBtn" class="btn btn-primary" type="submit" 
+        onclick="savePayment()" style="font-weight: 500; background-color:green">Save Payment</button>
     </div>    
 </form>
-       
-                            
-
-
-        </div>
+</div>
        
  
-  <button class="btn btn-primary" id="saveReceivedAmount">
+  <button class="btn btn-primary" id="saveReceivedAmount" >
             Save & Next
           </button>
           <button class="btn btn-secondary" id="skipReceivedAmount">
@@ -1582,8 +1579,31 @@ function getTableData(e) {
           </button>
         </div>
  </div>
+   
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+ <script src="booking/received-amount/received-amount.js"></script>
 <script>
+  //included js
+  
+  //aman new code 
+  document.getElementById("savePaymentBtn").addEventListener("click",()=>{
+    console.log("btn is clicked....");
+    calculateAED()
+  })
+
+  //calculate conversion
+  const convertINRtoAED=()=>{
+     const netInInr = parseFloat(document.getElementById("net_in_inr").value) || 0;
+    const conversionRate = parseFloat(document.getElementById("conversion_rate").value) || 1;
+    if (netInInr && conversionRate) {
+        const amountInAed = netInInr / conversionRate;
+        document.getElementById("amount_aed").value = amountInAed.toFixed(2); 
+    }
+  }
+
+
+
+
     // Counter for table row numbering
     let paymentCounter = 1;
 
@@ -1619,56 +1639,36 @@ function getTableData(e) {
             <td>${importantNote}</td>
         `;
 
-        // Append the new row to the table
         tableBody.appendChild(newRow);
 
-        // Clear the form after saving
         document.getElementById('paymentForm').reset();
         document.getElementById('amount_aed').value = '';  // Clear the AED value
     });
-
-    // Function to calculate AED based on INR and conversion rate
-   
-  
-  
   </script>
   
    <script>
 
 function calculateAED() {
-   const netInInr = parseFloat(document.getElementById("net_in_inr").value) || 0;
+     const netInInr = parseFloat(document.getElementById("net_in_inr").value) || 0;
     const conversionRate = parseFloat(document.getElementById("conversion_rate").value) || 1;
 
-    // Check if both fields have values
     if (netInInr && conversionRate) {
         const amountInAed = netInInr / conversionRate;
-        
-        // Update Amount in AED
-        document.getElementById("amount_aed").value = amountInAed.toFixed(2); // Limit to 2 decimal places
-
-        // Update the received AED and INR fields automatically
         document.getElementById("received_aed").value = amountInAed.toFixed(2);
         document.getElementById("received_inr").value = netInInr.toFixed(2);
     }
-
-    // Fetch total bill AED and received AED values
     const totalBillAED = parseFloat(document.getElementById('total_bill_aed').value) || 0;
     const receivedAED = parseFloat(document.getElementById('received_aed').value) || 0;
 
-    // Calculate Total Bill INR using the conversion rate of 3.65
     const totalBillINR = totalBillAED * 23;
 
-    // Update the Total Bill INR field
     document.getElementById('total_bill_inr').value = totalBillINR.toFixed(2);
 
-    // Fetch received INR value (it is already updated automatically)
     const receivedINR = parseFloat(document.getElementById('received_inr').value) || 0;
 
-    // Calculate pending amounts for AED and INR
     const pendingAED = totalBillAED - receivedAED;
     const pendingINR = totalBillINR - receivedINR;
 
-    // Update pending amounts in the corresponding fields
     document.getElementById('pending_aed').value = pendingAED.toFixed(2);
     document.getElementById('pending_inr').value = pendingINR.toFixed(2);
 }
@@ -2578,9 +2578,6 @@ const apiUrl = `http://localhost/OASIS-CRM/generate-invoice/api.generateInvoice.
      const {reference_number,company_name,agent_name,contact,gstin_no,guest_name,hotel_name,}=bookingData;
      console.log("cdnacu",bookingData)
      
-
-
-
     newWindow.document.write(`
    <html>
     <head>
